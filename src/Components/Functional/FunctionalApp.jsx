@@ -5,7 +5,7 @@ import { Images } from "../../assets/Images";
 import { useState } from "react";
 import React from "react";
 
-const initialFishes = [
+export const initialFishes = [
   {
     name: "trout",
     url: Images.trout,
@@ -25,34 +25,38 @@ const initialFishes = [
 ];
 
 export function FunctionalApp() {
-  const [correctFish, setCorrectFish] = useState(0);
-  const [incorrectFish, setIncorrectFish] = useState(0);
-  const [gameFinished, setGameFinished] = useState(false);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [incorrectCount, setIncorrectCount] = useState(0);
 
-  const handleGameFinish = () => {
-    setGameFinished(true);
+  const fishIndex = correctCount + incorrectCount;
+  const gameFinished = fishIndex === initialFishes.length;
+  const answersLeft = initialFishes.slice(fishIndex).map((fish) => fish.name);
+
+  const handleAnswer = (answer) => {
+    if (answer.toLowerCase() === initialFishes[fishIndex].name.toLowerCase()) {
+      setCorrectCount(correctCount + 1);
+    } else {
+      setIncorrectCount(incorrectCount + 1);
+    }
   };
 
   return (
     <>
       {gameFinished ? (
         <FunctionalFinalScore
-          correctCount={correctFish}
-          totalCount={correctFish + incorrectFish}
+          correctCount={correctCount}
+          totalCount={correctCount + incorrectCount}
         />
       ) : (
         <>
           <FunctionalScoreBoard
-            initialFishes={initialFishes}
-            correctCount={correctFish}
-            incorrectCount={incorrectFish}
+            answersLeft={answersLeft}
+            correctCount={correctCount}
+            incorrectCount={incorrectCount}
           />
           <FunctionalGameBoard
-            setCorrectFish={setCorrectFish}
-            setIncorrectFish={setIncorrectFish}
-            onGameFinished={handleGameFinish}
-            correctFish={correctFish}
-            incorrectFish={incorrectFish}
+            handleAnswer={handleAnswer}
+            fishIndex={fishIndex}
           />
         </>
       )}

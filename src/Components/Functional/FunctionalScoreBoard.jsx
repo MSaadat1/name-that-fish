@@ -3,14 +3,10 @@ import React from "react";
 //  Where the score is presented
 
 export function FunctionalScoreBoard({
-  initialFishes,
+  answersLeft,
   correctCount,
   incorrectCount,
 }) {
-  const answeredCount = correctCount + incorrectCount;
-  const answersLeft = initialFishes
-    .slice(answeredCount)
-    .map((fish) => fish.name);
   return (
     <div id="score-board">
       <div>Incorrect 🔻: {incorrectCount}</div>

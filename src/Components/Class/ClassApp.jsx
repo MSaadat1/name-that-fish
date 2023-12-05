@@ -5,7 +5,7 @@ import { ClassFinalScore } from "./ClassFinalScore";
 import { Images } from "../../assets/Images";
 import React from "react";
 
-const initialFishes = [
+export const initialFishes = [
   {
     name: "trout",
     url: Images.trout,
@@ -26,41 +26,47 @@ const initialFishes = [
 
 export class ClassApp extends Component {
   state = {
-    incorrectFishName: 0,
-    correctFishName: 0,
-    gameFinished: false,
+    incorrectCount: 0,
+    correctCount: 0,
   };
 
-  handleGameFinish = () => {
-    this.setState({ gameFinished: true });
+  handleAnswer = (answer) => {
+    const { correctCount, incorrectCount } = this.state;
+    const fishIndex = correctCount + incorrectCount;
+
+    if (answer.toLowerCase() === initialFishes[fishIndex].name.toLowerCase()) {
+      this.setState((prevState) => ({
+        correctCount: prevState.correctCount + 1,
+      }));
+    } else {
+      this.setState((prevState) => ({
+        incorrectCount: prevState.incorrectCount + 1,
+      }));
+    }
   };
+
   render() {
-    const { correctFishName, incorrectFishName, gameFinished } = this.state;
+    const { correctCount, incorrectCount } = this.state;
+    const fishIndex = correctCount + incorrectCount;
+    const gameFinished = fishIndex === initialFishes.length;
+    const answersLeft = initialFishes.slice(fishIndex).map((fish) => fish.name);
     return (
       <>
         {gameFinished ? (
           <ClassFinalScore
-            correctCount={correctFishName}
-            totalCount={correctFishName + incorrectFishName}
+            correctCount={correctCount}
+            totalCount={correctCount + incorrectCount}
           />
         ) : (
           <>
             <ClassScoreBoard
-              initialFishes={initialFishes}
-              correctCount={correctFishName}
-              incorrectCount={incorrectFishName}
+              answersLeft={answersLeft}
+              correctCount={correctCount}
+              incorrectCount={incorrectCount}
             />
             <ClassGameBoard
-              setCorrectFishName={(value) =>
-                this.setState({ correctFishName: value })
-              }
-              setIncorrectFishName={(value) =>
-                this.setState({ incorrectFishName: value })
-              }
-              onGameFinish={this.handleGameFinish}
-              initialFishes={initialFishes}
-              correctFishName={correctFishName}
-              incorrectFishName={incorrectFishName}
+              handleAnswer={this.handleAnswer}
+              fishIndex={fishIndex}
             />
           </>
         )}
